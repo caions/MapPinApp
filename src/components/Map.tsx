@@ -1,5 +1,5 @@
 import { LatLngLiteral } from "leaflet";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MapContainer,
   Marker,
@@ -7,28 +7,44 @@ import {
   useMapEvents,
   Popup,
 } from "react-leaflet";
-import { pinsMock } from "../mock/pinsMock";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Offcanvas, ListGroup } from "react-bootstrap";
+import { fetchPins, addPin } from "../api";
 
 export const Map: React.FC = () => {
-  const initialPosition: LatLngLiteral = pinsMock[0];
-  const [pins, setPins] = useState<LatLngLiteral[]>(pinsMock);
-  const [selectedPin, setSelectedPin] =
-    useState<LatLngLiteral>(initialPosition);
+  const [pins, setPins] = useState<LatLngLiteral[]>([]);
+  const [selectedPin, setSelectedPin] = useState<LatLngLiteral | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
+
+  useEffect(() => {
+    const loadPins = async () => {
+      try {
+        const fetchedPins = await fetchPins();
+        setPins(fetchedPins);
+        if (fetchedPins.length > 0) {
+          setSelectedPin(fetchedPins[0]);
+        }
+      } catch (error) {
+        console.error("Error loading pins:", error);
+      }
+    };
+
+    loadPins();
+  }, []);
 
   const MapClickHandler: React.FC = () => {
     useMapEvents({
-      click(event) {
+      click: async (event) => {
         const newPin = {
-          id: pins.length + 1,
-          name: `Pino ${pins.length + 1}`,
           lat: event.latlng.lat,
           lng: event.latlng.lng,
         };
-        setPins([...pins, newPin]);
-        setSelectedPin(newPin);
+        try {
+          const addedPin = await addPin(newPin);
+          setPins([...pins, addedPin]);
+          setSelectedPin(addedPin);
+        } catch (error) {
+          console.error("Error adding pin:", error);
+        }
       },
     });
     return null;
@@ -50,7 +66,7 @@ export const Map: React.FC = () => {
         ☰
       </Button>
       <MapContainer
-        center={initialPosition}
+        center={selectedPin || { lat: -3.7327, lng: -38.5267 }}
         zoom={13}
         scrollWheelZoom={false}
         style={{
