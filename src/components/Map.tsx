@@ -7,9 +7,9 @@ import {
   useMapEvents,
   Popup,
 } from "react-leaflet";
-import { Button, Navbar } from "react-bootstrap";
 import { fetchPins, addPin, deletePin } from "../api";
 import { Sidebar } from "./SideBar";
+import { NavbarComponent } from "./NavbarComponent";
 
 export const Map: React.FC = () => {
   const [pins, setPins] = useState<PinType[]>([]);
@@ -73,18 +73,7 @@ export const Map: React.FC = () => {
 
   return (
     <>
-      <Navbar bg="dark" variant="dark" expand="lg" className="d-flex">
-        <Navbar.Brand href="#home" className="mx-auto">
-          Map Pin App
-        </Navbar.Brand>
-        <Button
-          variant="outline-light"
-          className="ms-3"
-          onClick={() => setShowSidebar(true)}
-        >
-          <i className="bi bi-list"></i>
-        </Button>
-      </Navbar>
+      <NavbarComponent onSidebarToggle={() => setShowSidebar(true)} />
 
       <div className="d-flex">
         <MapContainer
