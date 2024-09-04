@@ -1,50 +1,80 @@
-# React + TypeScript + Vite
+# MapPinApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MapPinApp is a React application that uses Leaflet to display and interact with pins on a map. The app allows users to:
 
-Currently, two official plugins are available:
+- Add new pins by clicking on the map.
+- View pin information in a sidebar.
+- Delete pins.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+It also includes integration with a mock backend using `json-server` to simulate API calls.
 
-## Expanding the ESLint configuration
+## Requirements
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Node.js (version 18 or higher)
+- npm or yarn
 
-- Configure the top-level `parserOptions` property like this:
+## Installation
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1. Clone the repository:
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+   ```bash
+   git clone https://github.com/caions/MapPinApp.git
+   ```
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+   ```bash
+   cd mappinapp
+   ```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+2. Install the dependencies:
+
+   ```bash
+   npm install
+   ```
+
+## Running the Application
+
+1. Run the development server:
+   ```bash
+   npm run dev
+   ```
+2. Run the mock backend server:
+   ```bash
+   npm run json-server
+   ```
+
+The application will be available at [http://localhost:5173/](http://localhost:5173/).
+
+## Scripts
+
+- `npm run dev`: Starts the development server with Vite.
+- `npm run build`: Compiles TypeScript code and builds the project for production.
+- `npm run lint`: Runs code analysis with ESLint.
+- `npm run preview`: Starts a preview server to view the production build.
+- `npm run json-server`: Starts `json-server` to simulate the API (on port 5000).
+
+## Project Structure
+
+- `src/`: Contains the application source code.
+- `api.ts`: Functions for interacting with the mock API.
+- `components/`: React components, such as `Map` and `Sidebar`.
+- `types/`: TypeScript types used in the project.
+- `mock/`: Contains the mock database for `json-server`.
+
+## Mock Backend Setup
+
+The project includes a mock database for `json-server`. To start the `json-server`:
+npm run json-server
+
+This will start a server on port 5000 that provides endpoints to fetch, add, and delete pins.
+
+## Responsiveness
+
+The application is designed to be responsive, with a primary focus on desktop resolutions. The map and sidebar adjust based on screen size.
+
+## Technologies Used
+
+- **React**: JavaScript library for building user interfaces.
+- **Leaflet**: Mapping library for displaying and interacting with the map.
+- **Bootstrap 5**: CSS framework for styling and responsive components.
+- **Vite**: Fast build tool for development and production.
+- **json-server**: API simulation for development.
