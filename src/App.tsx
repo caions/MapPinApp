@@ -3,9 +3,9 @@ import { Map } from "./components/Map";
 
 function App() {
   return (
-    <div>
+    <>
       <Map />
-    </div>
+    </>
   );
 }
 
