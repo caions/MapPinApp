@@ -7,8 +7,8 @@ import {
   useMapEvents,
   Popup,
 } from "react-leaflet";
-import { Button, Offcanvas, ListGroup } from "react-bootstrap";
-import { fetchPins, addPin } from "../api";
+import { Button, Navbar, Offcanvas, ListGroup } from "react-bootstrap";
+import { fetchPins, addPin, deletePin } from "../api";
 
 export const Map: React.FC = () => {
   const [pins, setPins] = useState<PinType[]>([]);
@@ -59,75 +59,105 @@ export const Map: React.FC = () => {
     setShowSidebar(true);
   };
 
-  return (
-    <div className="d-flex">
-      <Button
-        variant="primary"
-        className="position-fixed top-0 end-0 m-3 z-index-100"
-        onClick={() => setShowSidebar(true)}
-        style={{ zIndex: 1050, display: showSidebar ? "none" : "block" }}
-      >
-        ☰
-      </Button>
-      <MapContainer
-        center={selectedPin || { lat: -3.7327, lng: -38.5267 }}
-        zoom={13}
-        scrollWheelZoom={false}
-        style={{
-          height: "100vh",
-          width: showSidebar ? "calc(100vw - 30vw)" : "100vw",
-          marginRight: showSidebar ? "30vw" : "0",
-          transition: "margin-right 0.3s ease",
-          position: "relative",
-        }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {pins.map((location) => (
-          <Marker
-            key={location.id}
-            position={[location.lat, location.lng]}
-            eventHandlers={{
-              click: () => handlePinClick(location),
-            }}
-          >
-            <Popup>
-              Lat: {location.lat} lng: {location.lng}
-            </Popup>
-          </Marker>
-        ))}
-        <MapClickHandler />
-      </MapContainer>
+  const handleDeletePin = async (pinId: number) => {
+    try {
+      await deletePin(pinId);
+      setPins(pins.filter((pin) => pin.id !== pinId));
+      setSelectedPin(null);
+      setActivePinId(null);
+    } catch (error) {
+      console.error("Error deleting pin:", error);
+    }
+  };
 
-      <Offcanvas
-        show={showSidebar}
-        onHide={() => setShowSidebar(false)}
-        placement="end"
-        style={{ width: "30vw", zIndex: 1040 }}
-      >
-        <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Pin Details</Offcanvas.Title>
-        </Offcanvas.Header>
-        <Offcanvas.Body>
-          <ListGroup>
-            {pins.map((pin) => (
-              <ListGroup.Item
-                key={pin.id}
-                action
-                onClick={() => handlePinClick(pin)}
-                active={activePinId === pin.id}
-                style={{ fontSize: "0.9rem" }}
-              >
-                <strong>Pin:</strong> {pin.id} <br />
-                <strong>Lat:</strong> {pin.lat.toFixed(5)} <br />
-                <strong>Lng:</strong> {pin.lng.toFixed(5)}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </Offcanvas.Body>
-      </Offcanvas>
-    </div>
+  return (
+    <>
+      <Navbar bg="dark" variant="dark" expand="lg" className="d-flex">
+        <Navbar.Brand href="#home" className="mx-auto">
+          Map Pin App
+        </Navbar.Brand>
+        <Button
+          variant="outline-light"
+          className="ms-3"
+          onClick={() => setShowSidebar(true)}
+        >
+          <i className="bi bi-list"></i>
+        </Button>
+      </Navbar>
+
+      <div className="d-flex">
+        <MapContainer
+          center={selectedPin || { lat: -3.7327, lng: -38.5267 }}
+          zoom={13}
+          scrollWheelZoom={false}
+          style={{
+            height: "calc(100vh - 56px)",
+            width: showSidebar ? "calc(100vw - 30vw)" : "100vw",
+            marginRight: showSidebar ? "30vw" : "0",
+            transition: "margin-right 0.3s ease",
+          }}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {pins.map((location) => (
+            <Marker
+              key={location.id}
+              position={[location.lat, location.lng]}
+              eventHandlers={{
+                click: () => handlePinClick(location),
+              }}
+            >
+              <Popup>
+                Lat: {location.lat} lng: {location.lng}
+              </Popup>
+            </Marker>
+          ))}
+          <MapClickHandler />
+        </MapContainer>
+
+        <Offcanvas
+          show={showSidebar}
+          onHide={() => setShowSidebar(false)}
+          placement="end"
+          className="offcanvas-custom"
+        >
+          <Offcanvas.Header closeButton>
+            <Offcanvas.Title>Pin Details</Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            <ListGroup>
+              {pins.map((pin) => (
+                <ListGroup.Item
+                  key={pin.id}
+                  action
+                  onClick={() => handlePinClick(pin)}
+                  active={activePinId === pin.id}
+                  style={{ fontSize: "0.9rem", position: "relative" }}
+                >
+                  <strong>Pin:</strong> {pin.id} <br />
+                  <strong>Lat:</strong> {pin.lat.toFixed(5)} <br />
+                  <strong>Lng:</strong> {pin.lng.toFixed(5)}
+                  <Button
+                    variant="link"
+                    className="position-absolute top-50 end-0 translate-middle-y me-2 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeletePin(pin.id);
+                    }}
+                  >
+                    <i
+                      className="bi bi-trash"
+                      style={{ fontSize: "1.2rem", color: "red" }}
+                    ></i>
+                  </Button>
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </Offcanvas.Body>
+        </Offcanvas>
+      </div>
+    </>
   );
 };

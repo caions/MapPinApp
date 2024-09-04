@@ -22,3 +22,12 @@ export const addPin = async (newPin: LatLngLiteral) => {
     throw error;
   }
 };
+
+export const deletePin = async (pinId: number) => {
+  try {
+    await axios.delete(`${API_BASE_URL}/${pinId}`);
+  } catch (error) {
+    console.error("Error deleting pin:", error);
+    throw error;
+  }
+};
