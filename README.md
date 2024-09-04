@@ -7,7 +7,10 @@ MapPinApp is a React application that uses Leaflet to display and interact with 
 - Delete pins.
 
 It also includes integration with a mock backend using `json-server` to simulate API calls.
+## Pictures
+![image](https://github.com/user-attachments/assets/09b3d3d4-aecf-48f8-aadb-043be47459c2)
 
+![image](https://github.com/user-attachments/assets/ea51e667-b75e-4205-aea5-c20fdeea5188)
 ## Requirements
 
 - Node.js (version 18 or higher)
