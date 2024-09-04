@@ -1,5 +1,5 @@
-import { LatLngLiteral } from "leaflet";
 import React, { useState, useEffect } from "react";
+import { PinType } from "../types/PinType";
 import {
   MapContainer,
   Marker,
@@ -11,9 +11,10 @@ import { Button, Offcanvas, ListGroup } from "react-bootstrap";
 import { fetchPins, addPin } from "../api";
 
 export const Map: React.FC = () => {
-  const [pins, setPins] = useState<LatLngLiteral[]>([]);
-  const [selectedPin, setSelectedPin] = useState<LatLngLiteral | null>(null);
+  const [pins, setPins] = useState<PinType[]>([]);
+  const [selectedPin, setSelectedPin] = useState<PinType | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [activePinId, setActivePinId] = useState<number | null>(null);
 
   useEffect(() => {
     const loadPins = async () => {
@@ -22,6 +23,7 @@ export const Map: React.FC = () => {
         setPins(fetchedPins);
         if (fetchedPins.length > 0) {
           setSelectedPin(fetchedPins[0]);
+          setActivePinId(fetchedPins[0].id);
         }
       } catch (error) {
         console.error("Error loading pins:", error);
@@ -42,6 +44,7 @@ export const Map: React.FC = () => {
           const addedPin = await addPin(newPin);
           setPins([...pins, addedPin]);
           setSelectedPin(addedPin);
+          setActivePinId(addedPin.id);
         } catch (error) {
           console.error("Error adding pin:", error);
         }
@@ -50,9 +53,10 @@ export const Map: React.FC = () => {
     return null;
   };
 
-  const handlePinClick = (pin: LatLngLiteral) => {
+  const handlePinClick = (pin: PinType) => {
     setSelectedPin(pin);
-    setShowSidebar(false);
+    setActivePinId(pin.id);
+    setShowSidebar(true);
   };
 
   return (
@@ -81,9 +85,9 @@ export const Map: React.FC = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {pins.map((location, index) => (
+        {pins.map((location) => (
           <Marker
-            key={index}
+            key={location.id}
             position={[location.lat, location.lng]}
             eventHandlers={{
               click: () => handlePinClick(location),
@@ -108,14 +112,15 @@ export const Map: React.FC = () => {
         </Offcanvas.Header>
         <Offcanvas.Body>
           <ListGroup>
-            {pins.map((pin, index) => (
+            {pins.map((pin) => (
               <ListGroup.Item
-                key={index}
+                key={pin.id}
                 action
                 onClick={() => handlePinClick(pin)}
+                active={activePinId === pin.id}
                 style={{ fontSize: "0.9rem" }}
               >
-                <strong>Pin:</strong> {index + 1} <br />
+                <strong>Pin:</strong> {pin.id} <br />
                 <strong>Lat:</strong> {pin.lat.toFixed(5)} <br />
                 <strong>Lng:</strong> {pin.lng.toFixed(5)}
               </ListGroup.Item>
