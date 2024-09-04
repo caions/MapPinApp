@@ -7,8 +7,9 @@ import {
   useMapEvents,
   Popup,
 } from "react-leaflet";
-import { Button, Navbar, Offcanvas, ListGroup } from "react-bootstrap";
+import { Button, Navbar } from "react-bootstrap";
 import { fetchPins, addPin, deletePin } from "../api";
+import { Sidebar } from "./SideBar";
 
 export const Map: React.FC = () => {
   const [pins, setPins] = useState<PinType[]>([]);
@@ -117,46 +118,14 @@ export const Map: React.FC = () => {
           <MapClickHandler />
         </MapContainer>
 
-        <Offcanvas
-          show={showSidebar}
-          onHide={() => setShowSidebar(false)}
-          placement="end"
-          className="offcanvas-custom"
-        >
-          <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Pin Details</Offcanvas.Title>
-          </Offcanvas.Header>
-          <Offcanvas.Body>
-            <ListGroup>
-              {pins.map((pin) => (
-                <ListGroup.Item
-                  key={pin.id}
-                  action
-                  onClick={() => handlePinClick(pin)}
-                  active={activePinId === pin.id}
-                  style={{ fontSize: "0.9rem", position: "relative" }}
-                >
-                  <strong>Pin:</strong> {pin.id} <br />
-                  <strong>Lat:</strong> {pin.lat.toFixed(5)} <br />
-                  <strong>Lng:</strong> {pin.lng.toFixed(5)}
-                  <Button
-                    variant="link"
-                    className="position-absolute top-50 end-0 translate-middle-y me-2 p-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeletePin(pin.id);
-                    }}
-                  >
-                    <i
-                      className="bi bi-trash"
-                      style={{ fontSize: "1.2rem", color: "red" }}
-                    ></i>
-                  </Button>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-          </Offcanvas.Body>
-        </Offcanvas>
+        <Sidebar
+          showSidebar={showSidebar}
+          pins={pins}
+          activePinId={activePinId}
+          onPinClick={handlePinClick}
+          onDeletePin={handleDeletePin}
+          onClose={() => setShowSidebar(false)}
+        />
       </div>
     </>
   );
