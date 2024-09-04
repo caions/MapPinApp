@@ -7,15 +7,17 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet";
+import { pinsMock } from "../mock/pinsMock";
 
 export const Map: React.FC = () => {
-  const initialPosition: LatLngExpression = [51.505, -0.09];
-  const [position, setPosition] = useState<LatLngExpression>(initialPosition);
+  const initialPosition: LatLngExpression = pinsMock[0];
+  const [position, setSelectedPosition] =
+    useState<LatLngExpression>(initialPosition);
 
   const MapClickHandler: React.FC = () => {
     useMapEvents({
       click(event) {
-        setPosition([event.latlng.lat, event.latlng.lng]);
+        setSelectedPosition([event.latlng.lat, event.latlng.lng]);
       },
     });
     return null;
@@ -38,6 +40,11 @@ export const Map: React.FC = () => {
         </Popup>
       </Marker>
       <MapClickHandler />
+      {pinsMock.map((location) => (
+        <Marker key={location.id} position={[location.lat, location.lng]}>
+          <Popup>{location.name}</Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 };
