@@ -1,11 +1,26 @@
 import { LatLngExpression } from "leaflet";
-import React from "react";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-
-// import { Container } from './styles';
+import React, { useState } from "react";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMapEvents,
+} from "react-leaflet";
 
 export const Map: React.FC = () => {
-  const position: LatLngExpression = [51.505, -0.09];
+  const initialPosition: LatLngExpression = [51.505, -0.09];
+  const [position, setPosition] = useState<LatLngExpression>(initialPosition);
+
+  const MapClickHandler: React.FC = () => {
+    useMapEvents({
+      click(event) {
+        setPosition([event.latlng.lat, event.latlng.lng]);
+      },
+    });
+    return null;
+  };
+
   return (
     <MapContainer
       center={position}
@@ -22,6 +37,7 @@ export const Map: React.FC = () => {
           A pretty CSS3 popup. <br /> Easily customizable.
         </Popup>
       </Marker>
+      <MapClickHandler />
     </MapContainer>
   );
 };
