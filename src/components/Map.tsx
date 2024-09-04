@@ -99,9 +99,7 @@ export const Map: React.FC = () => {
                 click: () => handlePinClick(location),
               }}
             >
-              <Popup>
-                Lat: {location.lat} lng: {location.lng}
-              </Popup>
+              <Popup>Pin: {location.id}</Popup>
             </Marker>
           ))}
           <MapClickHandler />
